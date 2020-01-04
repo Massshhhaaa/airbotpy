@@ -1,1 +1,1 @@
-worker: airport.py
+web: python airport.py
