@@ -102,5 +102,3 @@ Thread(target=check_upd, args=(client,)).start()
 while True:
     try:
         bot.polling(none_stop=True)
-    except Exception as E:
-        time.sleep(1)
