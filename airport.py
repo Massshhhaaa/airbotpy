@@ -3,6 +3,7 @@ from telebot import types
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
+import os
 TOKEN = "1020204517:AAFYVzNcIg4DfT7aUGJjOx91ae8XVGXNHhg"
 bot = telebot.TeleBot(TOKEN)
 
@@ -100,4 +101,8 @@ Thread(target=client.loop_forever, args=()).start()
 Thread(target=check_upd, args=(client,)).start()
 #bot.polling(none_stop=True)  # bot.infinity_polling(True). если бот будет падать, то поставить это
 
-bot.infinity_polling(True)
+while True:
+    try:
+        bot.polling(none_stop=True)
+    except Exception as E:
+        time.sleep(1)
