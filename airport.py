@@ -97,7 +97,7 @@ client.connect("farmer.cloudmqtt.com", 12415, 60)
 
 #Thread(target=bot.polling, args=(True,)).start()
 Thread(target=client.loop_forever, args=()).start()
-Thread(target=check_upd, args=(client,)).start()
+Thread(target=check_upd, args=(client, message,)).start()
 #bot.polling(none_stop=True)  # bot.infinity_polling(True). если бот будет падать, то поставить это
 
 while True:
