@@ -91,7 +91,7 @@ def check_upd(client):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.username_pw_set("vcnpayei","os.environ['MQTT_PASS']")
+client.username_pw_set("vcnpayei", os.environ["MQTT_PASS"])
 client.connect(os.environ["MQTT_PASS"], 12415, 60)
 
 
