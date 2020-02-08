@@ -4,9 +4,11 @@ import paho.mqtt.client as mqtt
 from threading import Thread
 import time
 import os
-bot = telebot.TeleBot(os.environ['TOKEN'])
+TOKEN = os.environ['TOKEN']
+bot = telebot.TeleBot(TOKEN)
 
 mqtt_callback = 10
+print(TOKEN)
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
