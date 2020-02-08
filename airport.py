@@ -22,7 +22,7 @@ def send_welcome(message):
 def keyboard():
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
     btn1 = types.KeyboardButton('Engine') #объявляем кнопку
-    btn2 = types.KeyboardButton('floor')
+    btn2 = types.KeyboardButton('Floor')
     markup.add(btn1) #задаем кнопки, чере запятую
     markup.add(btn2)
     return markup
@@ -39,26 +39,26 @@ def send_anytext(message):     #обратная связь, после полу
                 if mqtt_callback == b'engine_is_on' or mqtt_callback == b'engine_is_off':
                     run = False
                     if mqtt_callback == b'engine_is_on':
-                        text = 'Подогрев двигателя ВКЛЮЧЕН'
+                        text = 'ВКЛЮЧЕН'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     else:
-                        text = 'Подогрев двигателя ВЫКЛЮЧЕН'
+                        text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
 
-        if message.text == 'floor':
+        if message.text == 'Floor':
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
             run1 = True
             while run1:
                 if mqtt_callback == b'floor_is_on' or mqtt_callback == b'floor_is_off':
                     run1 = False
                     if mqtt_callback == b'floor_is_on':
-                        text = 'Подогрев пола включен'
+                        text = 'включен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     else:
-                        text = 'Подогрев пола выключен'
+                        text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
         #    text = 'Подогрвев пола ВКЛЮЧЕН'
@@ -76,17 +76,14 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
     mqtt_callback = msg.payload
    # callback_msg = (msg.payload)
 
-def check_upd(client):
-    run1 = True
-    while run1:
+def check_upd(client, message):
+    while True:
         if mqtt_callback == b'engine_is_off_auto':
             print("функция побежала")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Выключен подогрев двигателя по истечению времени'
-            chat_id = '441494356'
-            bot.send_message(chat_id, text)
-            time.sleep(10)
-        run1 = True
+            #chat_id = '441494356'
+            bot.send_message(message.chat.id, text)
 
 
 
