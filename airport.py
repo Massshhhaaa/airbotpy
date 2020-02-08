@@ -7,8 +7,6 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 mqtt_callback = 10
-print(TOKEN)
-
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
