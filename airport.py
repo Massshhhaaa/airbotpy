@@ -46,6 +46,7 @@ def send_anytext(message):     #обратная связь, после полу
                         text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                    global chat_id_for_auto = chat_id
 
         if message.text == 'Floor':
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
@@ -97,7 +98,7 @@ client.connect("farmer.cloudmqtt.com", 12415, 60)
 
 #Thread(target=bot.polling, args=(True,)).start()
 Thread(target=client.loop_forever, args=()).start()
-Thread(target=check_upd, args=(client, message,)).start()
+Thread(target=check_upd, args=(client, chat_id_for_auto,)).start()
 #bot.polling(none_stop=True)  # bot.infinity_polling(True). если бот будет падать, то поставить это
 
 while True:
