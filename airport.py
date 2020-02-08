@@ -82,13 +82,17 @@ def check_upd(client):
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Автоматически выключен подогрев двигателя'
             bot.send_message(client.chat_idG, text)
+            #дублирование для меня
+            if chat_idG != '441494356':
+                bot.send_message('441494356', text)
+
 
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.username_pw_set("vcnpayei","Mc55q9zvQ7Ek")
-client.connect("farmer.cloudmqtt.com", 12415, 60)
+client.username_pw_set("vcnpayei","os.environ['MQTT_PASS']")
+client.connect(os.environ["MQTT_PASS"], 12415, 60)
 
 
 Thread(target=client.loop_forever, args=()).start()
