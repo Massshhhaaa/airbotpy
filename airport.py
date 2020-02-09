@@ -86,6 +86,7 @@ def check_upd(client):
             text = 'Автоматически выключен подогрев двигателя'
             global chat_idG
             bot.send_message(chat_idG, text)
+            global chat_idG
             print(chat_idG)
             #дублирование для меня
             if chat_idG != '441494356':
