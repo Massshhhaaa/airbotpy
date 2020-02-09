@@ -86,10 +86,10 @@ def check_upd(client):
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Автоматически выключен подогрев двигателя'
             global chat_idG
-            bot.send_message('441494356', text)
+            bot.send_message(441494356, text)
             #дублирование для меня
             if chat_idG != 441494356:
-                bot.send_message('441494356', text)
+                bot.send_message(441494356, text)
 
 
 
