@@ -45,6 +45,7 @@ def send_anytext(message):     #обратная связь, после полу
                         text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                print(chat_id)
                 global chat_idG
                 chat_idG = chat_id
 
