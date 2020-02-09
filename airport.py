@@ -7,7 +7,6 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 mqtt_callback = 10
-chat_idG = 0
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -86,7 +85,6 @@ def check_upd(client):
             text = 'Автоматически выключен подогрев двигателя'
             global chat_idG
             bot.send_message(chat_idG, text)
-            print(global chat_idG)
             #дублирование для меня
             if chat_idG != '441494356':
                 bot.send_message('441494356', text)
