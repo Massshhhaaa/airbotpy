@@ -7,6 +7,7 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 mqtt_callback = 10
+chat_idG = 0
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -45,7 +46,8 @@ def send_anytext(message):     #обратная связь, после полу
                         text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                client.chat_idG = chat_id
+                global chat_idG
+                chat_idG = chat_id
 
 
         if message.text == 'Floor':
@@ -82,9 +84,10 @@ def check_upd(client):
             print("вошел в функцию автоматического отключения")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Автоматически выключен подогрев двигателя'
-            bot.send_message(client.chat_idG, text)
+            global chat_idG
+            bot.send_message(chat_idG, text)
             #дублирование для меня
-            if client.chat_idG != '441494356':
+            if chat_idG != '441494356':
                 bot.send_message('441494356', text)
 
 
