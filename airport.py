@@ -87,7 +87,8 @@ def check_upd(client):
             global chat_idG
             bot.send_message(chat_idG, text)
             #дублирование для меня
-            if chat_idG == '441494356':
+            global chat_idG
+            if chat_idG != '441494356':
                 bot.send_message('441494356', text)
 
 
