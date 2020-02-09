@@ -79,6 +79,7 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
 def check_upd(client):
     while True:
         if mqtt_callback == b'engine_is_off_auto':
+            print("вошел в функцию автоматического отключения")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Автоматически выключен подогрев двигателя'
             bot.send_message(client.chat_idG, text)
