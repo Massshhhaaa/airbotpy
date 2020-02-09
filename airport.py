@@ -32,6 +32,9 @@ def send_anytext(message):     #обратная связь, после полу
     user_id = message.from_user.id
     global chat_idG
     chat_idG = message.chat.id
+    
+    print(chat_id)
+    
     if user_id == 441494356 or user_id == 630799281:
         if message.text == 'Engine':
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
@@ -87,8 +90,7 @@ def check_upd(client):
             global chat_idG
             bot.send_message(chat_idG, text)
             #дублирование для меня
-            global chat_idG
-            if chat_idG != '441494356':
+            if chat_idG != 441494356:
                 bot.send_message('441494356', text)
 
 
