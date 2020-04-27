@@ -1,5 +1,6 @@
 import telebot
 from telebot import types
+from datetime import datetime
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
@@ -32,39 +33,48 @@ def send_anytext(message):     #обратная связь, после полу
     user_id = message.from_user.id
     global chat_idG
     chat_idG = message.chat.id
-    
+
     if user_id == 441494356 or user_id == 630799281:
+
         if message.text == 'Engine':
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
-            run = True
-            while run:
+            t1 = datetime.now()
+            while True:
                 if mqtt_callback == b'engine_is_on' or mqtt_callback == b'engine_is_off':
-                    run = False
                     if mqtt_callback == b'engine_is_on':
                         text = 'ВКЛЮЧЕН'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                        break
                     else:
                         text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
-
+                        break
+                if (datetime.now()-t1).seconds > 6:
+                    bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
+                    break
 
 
         if message.text == 'Floor':
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
-            run1 = True
-            while run1:
+            t1 = datetime.now()
+            while True:
                 if mqtt_callback == b'floor_is_on' or mqtt_callback == b'floor_is_off':
                     run1 = False
                     if mqtt_callback == b'floor_is_on':
                         text = 'включен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                        break
                     else:
                         text = 'выключен'
                         bot.send_message(chat_id, text, parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                        break
+                if (datetime.now()-t1).seconds > 6:
+                    bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
+                    break
 
 
 def on_connect(client, userdata, flags, rc):
