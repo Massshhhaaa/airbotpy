@@ -45,13 +45,14 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text = 'ВКЛЮЧЕН', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         chat_idG = chat_id
+                        break
                 elif mqtt_callback == b'engine_is_off':
                         bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                        break
                 elif (datetime.now()-t1).seconds > error_time:
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
-
 
         if message.text == 'Floor':
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
@@ -61,11 +62,11 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text = 'включен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                if mqtt_callback == b'floor_is_off':
+                elif mqtt_callback == b'floor_is_off':
                         bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                if (datetime.now()-t1).seconds > error_time:
+                elif (datetime.now()-t1).seconds > error_time:
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
