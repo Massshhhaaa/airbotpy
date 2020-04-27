@@ -8,7 +8,6 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 mqtt_callback = 10
-error_time = 5
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -29,11 +28,12 @@ def keyboard():
     return markup
 
 @bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
-def send_anytext(message, error_time):     #обратная связь, после получения команды с кнопки
+def send_anytext(message):     #обратная связь, после получения команды с кнопки
     chat_id = message.chat.id
     user_id = message.from_user.id
     global chat_idG
     chat_idG = message.chat.id
+    error_time = 5
 
     if user_id == 441494356 or user_id == 630799281:
 
@@ -62,7 +62,6 @@ def send_anytext(message, error_time):     #обратная связь, пос�
             t1 = datetime.now()
             while True:
                 if mqtt_callback == b'floor_is_on' or mqtt_callback == b'floor_is_off':
-                    run1 = False
                     if mqtt_callback == b'floor_is_on':
                         text = 'включен'
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
