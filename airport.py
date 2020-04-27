@@ -8,6 +8,7 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 mqtt_callback = 10
+error_time = 5
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -28,7 +29,7 @@ def keyboard():
     return markup
 
 @bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
-def send_anytext(message):     #обратная связь, после получения команды с кнопки
+def send_anytext(message, error_time):     #обратная связь, после получения команды с кнопки
     chat_id = message.chat.id
     user_id = message.from_user.id
     global chat_idG
@@ -51,7 +52,7 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                if (datetime.now()-t1).seconds > 6:
+                if (datetime.now()-t1).seconds > error_time:
                     bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
@@ -72,7 +73,7 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text, parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                if (datetime.now()-t1).seconds > 6:
+                if (datetime.now()-t1).seconds > error_time:
                     bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
