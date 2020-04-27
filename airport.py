@@ -41,15 +41,13 @@ def send_anytext(message):     #обратная связь, после полу
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
             t1 = datetime.now()
             while True:
-                if mqtt_callback == b'engine_is_on' or mqtt_callback == b'engine_is_off':
-                    if mqtt_callback == b'engine_is_on':
-                        text = 'ВКЛЮЧЕН'
-                        bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
+                if mqtt_callback == b'engine_is_on':
+                        bot.send_message(chat_id, text = 'ВКЛЮЧЕН', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                        chat_idG = chat_id
                         break
-                    else:
-                        text = 'выключен'
-                        bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
+                if mqtt_callback == b'engine_is_off':
+                        bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
                 if (datetime.now()-t1).seconds > error_time:
@@ -61,15 +59,12 @@ def send_anytext(message):     #обратная связь, после полу
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
             t1 = datetime.now()
             while True:
-                if mqtt_callback == b'floor_is_on' or mqtt_callback == b'floor_is_off':
-                    if mqtt_callback == b'floor_is_on':
-                        text = 'включен'
-                        bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
+                if mqtt_callback == b'floor_is_on':
+                        bot.send_message(chat_id, text = 'включен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                    else:
-                        text = 'выключен'
-                        bot.send_message(chat_id, text, parse_mode="HTML", reply_markup=keyboard())
+                if mqtt_callback == b'floor_is_off':
+                        bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
                 if (datetime.now()-t1).seconds > error_time:
@@ -96,7 +91,7 @@ def check_upd(client):
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
             text = 'Автоматически выключен подогрев двигателя'
             global chat_idG
-            bot.send_message(441494356, text)
+            bot.send_message(chat_idG, text)
             #дублирование для меня
             if chat_idG != 441494356:
                 bot.send_message(441494356, text)
