@@ -45,13 +45,12 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text = 'ВКЛЮЧЕН', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         chat_idG = chat_id
-                        break
-                if mqtt_callback == b'engine_is_off':
+                elif mqtt_callback == b'engine_is_off':
                         bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                        break
-                if (datetime.now()-t1).seconds > error_time:
-                    bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
+                else:
+                    if (datetime.now()-t1).seconds > error_time:
+                    bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
 
@@ -68,7 +67,7 @@ def send_anytext(message):     #обратная связь, после полу
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
                 if (datetime.now()-t1).seconds > error_time:
-                    bot.send_message(chat_id, text = 'соединение не установлено', parse_mode='HTML', reply_markup=keyboard())
+                    bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
 
