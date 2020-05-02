@@ -33,7 +33,7 @@ def send_anytext(message):     #обратная связь, после полу
     user_id = message.from_user.id
     global chat_idG
     chat_idG = message.chat.id
-    error_time = 5
+    timeout = 5
 
     if user_id == 441494356 or user_id == 630799281:
 
@@ -50,7 +50,7 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                elif (datetime.now()-t1).seconds > error_time:
+                elif (datetime.now()-t1).seconds > timeout:
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
@@ -66,7 +66,7 @@ def send_anytext(message):     #обратная связь, после полу
                         bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
                         client.publish("/airport_callback", payload="0", qos=0, retain=False)
                         break
-                elif (datetime.now()-t1).seconds > error_time:
+                elif (datetime.now()-t1).seconds > timeout:
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
@@ -98,7 +98,7 @@ def check_upd(client):
                 bot.send_message(441494356, text)
 
         if mqtt_callback == b'motion_detected':
-            if ((datetime.now()-t3).seconds > time_sensitive) or (start_flg == True):
+            if (datetime.now()-t3).seconds > time_sensitive or start_flg:
                 client.publish("/airport_callback", payload="0", qos=0, retain=False)
                 bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
                 t3 = datetime.now() # время последнего обнаружения
