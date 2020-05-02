@@ -84,6 +84,8 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
    # callback_msg = (msg.payload)
 
 def check_upd(client):
+    time_sensitive = 30
+    start_flg = True
     while True:
         if mqtt_callback == b'engine_is_off_auto':
             print("вошел в функцию автоматического отключения")
@@ -93,9 +95,13 @@ def check_upd(client):
             #дублирование для меня
             if chat_idG != 441494356:
                 bot.send_message(441494356, text)
+
         if mqtt_callback == b'motion_detected':
-            client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
+            if (datetime.now()-t).seconds > time_sensitive or start_flg:
+                client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
+                t = datetime.now() # время последнего обнаружения
+                start_flag = False
 
 
 
