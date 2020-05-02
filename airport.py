@@ -88,12 +88,16 @@ def check_upd(client):
         if mqtt_callback == b'engine_is_off_auto':
             print("вошел в функцию автоматического отключения")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            text = 'Автоматически выключен подогрев двигателя'
             global chat_idG
-            bot.send_message(chat_idG, text)
+            bot.send_message(chat_idG, text = 'Автоматически выключен подогрев двигателя')
             #дублирование для меня
             if chat_idG != 441494356:
                 bot.send_message(441494356, text)
+
+        if mqtt_callback == b'motion_detected'
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
+
 
 
 
