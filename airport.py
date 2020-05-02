@@ -86,7 +86,7 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
 def check_upd(client):
     time_sensitive = 30
     start_flg = True
-    t = 0
+    t
     while True:
         if mqtt_callback == b'engine_is_off_auto':
             print("вошел в функцию автоматического отключения")
