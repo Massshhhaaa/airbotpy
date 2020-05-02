@@ -23,8 +23,9 @@ def keyboard():
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
     btn1 = types.KeyboardButton('Engine') #объявляем кнопку
     btn2 = types.KeyboardButton('Floor')
+    btn3 = types.KeyboardButton('Security')
     markup.add(btn1, btn2) #задаем кнопки, чере запятую
-   #markup.add(btn2)
+    markup.add(btn3)
     return markup
 
 @bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
@@ -69,6 +70,16 @@ def send_anytext(message):     #обратная связь, после полу
                 elif (datetime.now()-t1).seconds > timeout:
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
+        if message.text == 'Security':
+            if s == False:
+                s = True
+                text = 'Система безопасности активна'
+            elif s == True:
+                s = False
+                text = 'Деактивировано'
+            bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard())
+            return s
+
 
 
 def on_connect(client, userdata, flags, rc):
@@ -84,7 +95,7 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
    # callback_msg = (msg.payload)
 
 def check_upd(client):
-    time_sensitive = 30
+    time_sensitive = 30 # время задержки между отправкой оповещений движении
     start_flg = True
     t3 = datetime.now()
     while True:
@@ -97,12 +108,13 @@ def check_upd(client):
             if chat_idG != 441494356:
                 bot.send_message(441494356, text)
 
-        if mqtt_callback == b'motion_detected':
-            if (datetime.now()-t3).seconds > time_sensitive or start_flg:
-                client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
-                t3 = datetime.now() # время последнего обнаружения
-                start_flg = False
+        if send_anytext():
+            if mqtt_callback == b'motion_detected':
+                if (datetime.now()-t3).seconds > time_sensitive or start_flg:
+                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                    bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк')
+                    t3 = datetime.now() # время последнего обнаружения
+                    start_flg = False
 
 
 
