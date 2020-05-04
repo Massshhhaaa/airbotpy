@@ -123,7 +123,7 @@ def check_upd(client):
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
                 if mqtt_callback == b'motion_detected':
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                    bot.send_message(chat_id = 441494356, text = %E2%AD%95% 'Обнаружен котiк')
+                    bot.send_message(chat_id = 441494356, text =  'Обнаружен котiк')
                     t3 = datetime.now() # время последнего обнаружения
                     start_flg = False
 
