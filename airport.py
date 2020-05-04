@@ -6,8 +6,7 @@ from threading import Thread
 import time
 import os
 
-#bot = telebot.TeleBot(os.environ['TOKEN'])
-bot = telebot.TeleBot('1020204517:AAFY19v_N6cSXN4MwpIqG54Gaedd5eY4DyI')
+bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 
 @bot.message_handler(commands=['start', 'go'])
@@ -130,8 +129,7 @@ def check_upd(client):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-#client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
-client.username_pw_set("vcnpayei", 'Mc55q9zvQ7Ek')
+client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
 client.connect("farmer.cloudmqtt.com", 12415, 60)
 
 Thread(target=client.loop_forever, args=()).start()
