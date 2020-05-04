@@ -75,6 +75,7 @@ def send_anytext(message):     #обратная связь, после полу
                     break
 
         if message.text == 'activate security':
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
             f = open('text.txt', 'w')
             f.write("sec = True")
             f.close()
