@@ -119,6 +119,7 @@ def check_upd(client):
         sec = f.read()
         f.close()
         if sec == 'sec = True':
+            time.sleep(2)
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
                 if mqtt_callback == b'motion_detected':
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
