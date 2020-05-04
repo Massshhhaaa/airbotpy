@@ -20,15 +20,16 @@ def send_welcome(message):
             ''',
             reply_markup=keyboard())
 
+
 def keyboard():
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    btn1 = types.KeyboardButton('Engine') #объявляем кнопку
-    btn2 = types.KeyboardButton('Floor')
-    btn3 = types.KeyboardButton('Activate Security')
-    btn4 = types.KeyboardButton('Deactivate')
-    markup.add(btn1)
-    markup.add(btn2) #задаем кнопки, чере запятую
-    markup.add(btn3, btn4)
+    btn3 = types.KeyboardButton('engine') #объявляем кнопку
+    btn4 = types.KeyboardButton('floor')
+    btn1 = types.KeyboardButton('activate security')
+    btn2 = types.KeyboardButton('deactivate')
+    markup.add(btn1, btn2)
+    markup.add(btn3)
+    markup.add(btn4) #задаем кнопки, чере запятую
     return markup
 
 @bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
@@ -36,13 +37,12 @@ def send_anytext(message):     #обратная связь, после полу
     chat_id = message.chat.id
     user_id = message.from_user.id
     global chat_idG
-    global secureG
     chat_idG = message.chat.id
     timeout = 4
 
     if user_id == 441494356 or user_id == 630799281:
 
-        if message.text == 'Engine':
+        if message.text == 'engine':
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
             t1 = datetime.now()
             while True:
@@ -59,7 +59,7 @@ def send_anytext(message):     #обратная связь, после полу
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
-        if message.text == 'Floor':
+        if message.text == 'floor':
             client.publish("/airport", payload="on_floor", qos=0, retain=False)
             t1 = datetime.now()
             while True:
@@ -75,13 +75,18 @@ def send_anytext(message):     #обратная связь, после полу
                     bot.send_message(chat_id, text = 'Cоединение не установлено', parse_mode='HTML', reply_markup=keyboard())
                     break
 
-        if message.text == 'Activate Security':
+        if message.text == 'activate security':
+            f = open('text.txt', 'w')
+            f.write("sec = True")
+            f.close()
             bot.send_message(chat_id, text='Система активирована', parse_mode='HTML', reply_markup=keyboard())
-            secureG = True
 
-        if message.text == 'Deactivate':
+        if message.text == 'deactivate':
+            f = open('text.txt', 'w')
+            f.write("swc = False")
+            f.close()
             bot.send_message(chat_id, text='Деактивировано', parse_mode='HTML', reply_markup=keyboard())
-            secureG = False
+
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -99,8 +104,7 @@ def check_upd(client):
     time_sensitive = 30 # время задержки между отправкой оповещений движении
     start_flg = True
     t3 = datetime.now()
-    global secureG
-    secureG = True
+
     while True:
         if mqtt_callback == b'engine_is_off_auto':
             print("вошел в функцию автоматического отключения")
@@ -111,7 +115,10 @@ def check_upd(client):
             if chat_idG != 441494356:
                 bot.send_message(441494356, text)
 
-        if secureG == True:
+        f = open('text.txt', 'r')
+        sec = f.read()
+        f.close()
+        if sec == 'sec = True':
             if mqtt_callback == b'motion_detected':
                 if (datetime.now()-t3).seconds > time_sensitive or start_flg:
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
@@ -120,17 +127,12 @@ def check_upd(client):
                     start_flg = False
 
 
-
-
-
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 #client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
 client.username_pw_set("vcnpayei", 'Mc55q9zvQ7Ek')
 client.connect("farmer.cloudmqtt.com", 12415, 60)
-
-
 
 Thread(target=client.loop_forever, args=()).start()
 Thread(target=check_upd, args=(client,)).start()
