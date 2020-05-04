@@ -83,7 +83,7 @@ def send_anytext(message):     #обратная связь, после полу
 
         if message.text == 'deactivate':
             f = open('text.txt', 'w')
-            f.write("swc = False")
+            f.write("sec = False")
             f.close()
             bot.send_message(chat_id, text='Деактивировано', parse_mode='HTML', reply_markup=keyboard())
 
@@ -118,7 +118,7 @@ def check_upd(client):
         f = open('text.txt', 'r')
         sec = f.read()
         f.close()
-        if sec == 'sec = True':
+        if sec == 'sec == True':
             time.sleep(2)
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
                 if mqtt_callback == b'motion_detected':
