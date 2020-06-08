@@ -20,6 +20,10 @@ def send_welcome(message):
             reply_markup=keyboard())
 
 
+def filework(place, text): # place = 0-2 in list, text must be include "something\n"
+    f = open('text.txt', 'r+')
+    content = f.readlines()
+    content[place] = text
     f.close()
     f = open('text.txt', 'w')
     f.close()
