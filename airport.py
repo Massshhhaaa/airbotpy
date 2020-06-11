@@ -117,7 +117,7 @@ def on_message(client, userdata, msg,): #(client, userdata, msg)
    # callback_msg = (msg.payload)
 
 def check_upd(client):
-    time_sensitive = 1 # время задержки между отправкой оповещений движении
+    time_sensitive = 5 # время задержки между отправкой оповещений движении
     start_flg = True
     t3 = datetime.now()
 
@@ -133,14 +133,14 @@ def check_upd(client):
                 bot.send_message(441494356, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
 
 
-        f = open('text.txt', 'r')
+        f = open('text.txt', 'r+')
         sec = f.read()
         f.close()
         if sec == 'deactivate':
             time.sleep(1)
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
-                if mqtt_callback == b'motion':
-                    client.publish("/airport_sensor", payload="0", qos=0, retain=False)
+                if mqtt_callback == b'motion_detected':
+                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     bot.send_message(chat_id = 441494356, text =  'Обнаружен котiк')
                     t3 = datetime.now() # время последнего обнаружения
                     start_flg = False
