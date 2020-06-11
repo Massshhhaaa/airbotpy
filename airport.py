@@ -8,6 +8,7 @@ import os
 
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
+mqtt_callback_sensor = 10
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -109,15 +110,19 @@ def on_connect(client, userdata, flags, rc):
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("/airport_callback")
+    client.subscribe("/airport_sensor")
 # The callback for when a PUBLISH message is received from the server.
-def on_message(client, userdata, msg,): #(client, userdata, msg)
+def on_message(client, userdata, msg,):
     print(msg.topic+" "+str(msg.payload))
     global mqtt_callback
+    global mqtt_callback_sensor
     mqtt_callback = msg.payload
-   # callback_msg = (msg.payload)
+    if msg.topic == "/airport_sensor":
+        mqtt_callback_sensor = msg.payload
+
 
 def check_upd(client):
-    time_sensitive = 5 # время задержки между отправкой оповещений движении
+    time_sensitive = 1 # время задержки между отправкой оповещений движении
     start_flg = True
     t3 = datetime.now()
 
@@ -134,13 +139,13 @@ def check_upd(client):
 
 
         f = open('text.txt', 'r')
-        sec = f.readline()
+        sec = f.readline().rstrip()
         f.close()
         if sec == 'deactivate':
             time.sleep(1)
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
-                if mqtt_callback == b'motion_detected':
-                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
+                if mqtt_callback_sensor == b'motion_detected':
+                    client.publish("/airport_sensor", payload="0", qos=0, retain=False)
                     bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк', parse_mode='HTML')
                     t3 = datetime.now() # время последнего обнаружения
                     start_flg = False
