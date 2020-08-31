@@ -1,3 +1,6 @@
+# topic /airort_callback used to recive messages from controller at the airport
+# topic /airport_sensor used only for motions sensors which send "motion detected" there is movement
+#
 import telebot
 from telebot import types
 from datetime import datetime
@@ -101,6 +104,7 @@ def send_anytext(message):     #обратная связь, после полу
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
         if message.text == 'deactivate':
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
             filework(0, 'activate security\n')
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
@@ -122,7 +126,10 @@ def on_message(client, userdata, msg,):
 
 
 def check_upd(client):
+    
     time_sensitive = 1 # время задержки между отправкой оповещений движении
+    
+    
     start_flg = True
     t3 = datetime.now()
 
@@ -158,7 +165,7 @@ client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
 client.connect("farmer.cloudmqtt.com", 12415, 60)
 Thread(target=client.loop_forever, args=()).start()
 Thread(target=check_upd, args=(client,)).start()
-#bot.polling(none_stop=True)  # bot.infinity_polling(True). если бот будет падать, то поставить это
+ # bot.infinity_polling(True). если бот будет падать, то поставить это
 
 while True:
     try:
