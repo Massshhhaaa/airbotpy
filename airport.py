@@ -125,11 +125,11 @@ def on_message(client, userdata, msg,):
         mqtt_callback_sensor = msg.payload
 
 
-def check_upd(client):
-    
+def check_upd(client): 
+
     time_sensitive = 1 # время задержки между отправкой оповещений движении
-    
-    
+
+
     start_flg = True
     t3 = datetime.now()
 
