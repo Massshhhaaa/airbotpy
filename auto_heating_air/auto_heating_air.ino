@@ -7,15 +7,15 @@
 #define BUFFER_SIZE 100
 #define RELAY_PIN1 12 //розетка на двигатель(правая)
 #define RELAY_PIN2 13  // HIGH соотвествует выключенному положение реле
-#define SENSOR_PIN1 15
-#define SENSOR_PIN2 14
+#define SENSOR_PIN1 5
+#define SENSOR_PIN2 4
 
 
-//const char *ssid =  "TP-Link_E82C";  // Имя вайфай точки доступа
-//const char *pass =  "11774372"; // Пароль от точки доступа
+const char *ssid =  "TP-Link_E82C";  // Имя вайфай точки доступа
+const char *pass =  "11774372"; // Пароль от точки доступа
 
-const char *ssid =  "Mahsa Naumova";  // Имя вайфай точки доступа
-const char *pass =  "masha1500"; // Пароль от точки доступа
+//const char *ssid =  "Mahsa Naumova";  // Имя вайфай точки доступа
+//const char *pass =  "masha1500"; // Пароль от точки доступа
 
 bool off_rstflag = true;
 bool automate_disable_flag = false;
@@ -108,7 +108,7 @@ void loop() {
         digitalWrite(RELAY_PIN1, HIGH);
         digitalWrite(RELAY_PIN2, HIGH);
         off_rstflag = false;
-      } delay(100);
+      } delay(5);
       client.loop();
 //отключение при достижении лимита времени подогрева двигателя
 if (digitalRead(RELAY_PIN1) == LOW){
@@ -118,12 +118,14 @@ if (digitalRead(RELAY_PIN1) == LOW){
           client.publish("/airport_callback", String("engine_is_off_auto"));
           automate_disable_flag = false;
         }
-      } delay(100);
+      } delay(5s);
      }
+     
+    if (digitalRead(SENSOR_PIN1) == LOW){
+   Serial.println("котик обнаружен");
+   client.publish("/airport_sensor", String("motion_detected"));
+    }
     }
   }
-if (digitalRead(SENSOR_PIN1) == LOW) or (digitalRead(SENSOR_PIN2) == LOW){
-    Serial.println("котик обнаружен");
-    client.publish("/airport_sensor", String("motion_detected"));
-    }
+
 }
