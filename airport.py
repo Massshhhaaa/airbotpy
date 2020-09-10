@@ -127,7 +127,7 @@ def on_message(client, userdata, msg,):
 
 def check_upd(client): 
 
-    time_sensitive = 1 # время задержки между отправкой оповещений движении
+    time_sensitive = 0 # время задержки между отправкой оповещений движении
 
 
     start_flg = True
