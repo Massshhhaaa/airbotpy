@@ -100,11 +100,13 @@ def send_anytext(message):     #обратная связь, после полу
 
         if message.text == 'activate security':
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            client.publish("/airport_callback", payload="security_activated", qos=0, retain=False)
             filework(0, 'deactivate\n')
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
         if message.text == 'deactivate':
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            client.publish("/airport_callback", payload="security_deactivated", qos=0, retain=False)
             filework(0, 'activate security\n')
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
@@ -125,7 +127,7 @@ def on_message(client, userdata, msg,):
         mqtt_callback_sensor = msg.payload
 
 
-def check_upd(client): 
+def check_upd(client):
 
     time_sensitive = 0 # время задержки между отправкой оповещений движении
 
@@ -153,7 +155,7 @@ def check_upd(client):
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
                 if mqtt_callback_sensor == b'motion_detected':
                     client.publish("/airport_sensor", payload="0", qos=0, retain=False)
-                    bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк', parse_mode='HTML')
+                    bot.send_message(chat_id = 441494356, text = 'Обнаружено движение', parse_mode='HTML')
                     t3 = datetime.now() # время последнего обнаружения
                     start_flg = False
 
