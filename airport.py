@@ -57,7 +57,7 @@ def send_anytext(message):     #обратная связь, после полу
     user_id = message.from_user.id
     global chat_idG
     chat_idG = message.chat.id
-    timeout = 3
+    timeout = 5
 
     if user_id == 441494356 or user_id == 630799281:
 
