@@ -41,8 +41,6 @@ void callback(const MQTT::Publish & pub) {     // Функция получен�
 
   String payload = pub.payload_string();
   if (String(pub.topic()) == "/airport") {  //  проверяем из нужного ли нам топика пришли данные
-    // rly01 = payload.toInt();         //  преобразуем полученные данные в тип integer
-    // digitalWrite(RELAY_PIN1, rly01);      //  включаем или выключаем светодиод в зависимоти от полученных значений данных
     if (payload == "on_engine") {
       if (digitalRead(RELAY_PIN1) == HIGH) {
         digitalWrite(RELAY_PIN1, LOW);
@@ -64,7 +62,7 @@ void callback(const MQTT::Publish & pub) {     // Функция получен�
         client.publish("/airport_callback", String("floor_is_off"));
       }Serial.print(digitalRead(RELAY_PIN2));
     }
-    if (payload == "security_activated") {
+    if (payload == " security_activated") {
       sensor_flag = true;
       client.publish("/airport_callback", String("now_security_activated"));
     }
