@@ -8,7 +8,7 @@
 #define RELAY_PIN1 12 //розетка на двигатель(правая)
 #define RELAY_PIN2 13  // HIGH соотвествует выключенному положение реле
 #define SENSOR_PIN1 5
-#define SENSOR_PIN2 4
+
 
 
 const char *ssid =  "TP-Link_E82C";  // Имя вайфай точки доступа
@@ -19,6 +19,7 @@ const char *pass =  "11774372"; // Пароль от точки доступа
 
 bool off_rstflag = true;
 bool automate_disable_flag = false;
+bool sensor_flag = false;
 
 const char *mqtt_server = "farmer.cloudmqtt.com"; // Имя сервера MQTT
 const int mqtt_port = 12415; // Порт для подключения к серверу MQTT
@@ -62,6 +63,14 @@ void callback(const MQTT::Publish & pub) {     // Функция получен�
         digitalWrite(RELAY_PIN2, HIGH);
         client.publish("/airport_callback", String("floor_is_off"));
       }Serial.print(digitalRead(RELAY_PIN2));
+    }
+    if (payload == "security_activated") {
+      sensor_flag = true;
+      client.publish("/airport_callback", String("now_security_activated"));
+    }
+    if (payload == "security_deactivated") {
+      sensor_flag = false;
+      client.publish("/airport_callback", String("now_security_deactivated"));
     }
   }
 }
@@ -118,14 +127,14 @@ if (digitalRead(RELAY_PIN1) == LOW){
           client.publish("/airport_callback", String("engine_is_off_auto"));
           automate_disable_flag = false;
         }
-      } delay(5s);
+      } delay(5);
      }
-     
-    if (digitalRead(SENSOR_PIN1) == LOW){
-   Serial.println("котик обнаружен");
-   client.publish("/airport_sensor", String("motion_detected"));
+    if (sensor_flag == true ){
+        if (digitalRead(SENSOR_PIN1) == LOW){
+       Serial.println("котик обнаружен");
+       client.publish("/airport_sensor", String("motion_detected"));
     }
     }
-  }
+  }}
 
 }
