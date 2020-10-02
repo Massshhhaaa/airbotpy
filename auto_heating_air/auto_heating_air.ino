@@ -66,12 +66,12 @@ void callback(const MQTT::Publish & pub) {     // Функция получен�
       }
     }
 
-    if (payload == "make_security_active") {
+    if (payload == "activate_security") {
       sensor_flag = true;
-      client.publish("/airport_callback", String("now_security_activat"));
+      client.publish("/airport_callback", String("now_security_activate"));
     }
 
-    if (payload == "security_deactive") {
+    if (payload == "deactivate_security") {
       sensor_flag = false;
       client.publish("/airport_callback", String("now_security_deactive"));
     }
