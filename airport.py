@@ -100,13 +100,13 @@ def send_anytext(message):     #обратная связь, после полу
 
         if message.text == 'activate security':
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            client.publish("/airport", payload="activate_security", qos=0, retain=False)
+            client.publish("/airport", payload="security_activated", qos=0, retain=False)
             filework(0, 'deactivate\n')
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
         if message.text == 'deactivate':
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            client.publish("/airport", payload="deactivate_security", qos=0, retain=False)
+            client.publish("/airport", payload="security_deactivated", qos=0, retain=False)
             filework(0, 'activate security\n')
             bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
