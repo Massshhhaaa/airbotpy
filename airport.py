@@ -61,9 +61,8 @@ def operation(type_operation, message):
     while True:
         if mqtt_callback == b'engine_is_on':
             d = datetime.now()
-            d.strftime("%d %b %H:%M")
             filework(1, 'heat off engine\n')
-            cb_msg = "Подогрев двигателя включен "+str(d)+ "\nЗапланированное выключение через 3 часа"
+            cb_msg = "Подогрев двигателя включен "+str(d.strftime("%d %b %H:%M"))+ "\nЗапланированное выключение через 3 часа"
             chat_idG = message.chat.id
             break
 
