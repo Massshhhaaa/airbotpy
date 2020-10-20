@@ -13,7 +13,7 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 mqtt_callback_sensor = 10
-whitelist = [441494356, 630799281]
+whitelist = [44149435, 63079928]
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -55,8 +55,7 @@ def keyboard():
 
 
 
-@bot.message_handler(func=lambda message: message.chat.id in whitelist)
-@bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
+@bot.message_handler(content_types=["text"], func=lambda message: message.chat.id in whitelist) #принимает любой текст фигню какую-то
 def send_anytext(message):     #обратная связь, после получения команды с кнопки
     chat_id = message.chat.id
     user_id = message.from_user.id
