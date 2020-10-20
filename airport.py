@@ -53,6 +53,52 @@ def keyboard():
     return markup
 
 
+def engine_operations(message, chat_id, user_id, chat_idG, timeout):
+    client.publish("/airport", payload="on_engine", qos=0, retain=False)
+    t1 = datetime.now()
+    while True:
+        if mqtt_callback == b'engine_is_on':
+            filework(1, 'heat off engine\n')
+            bot.send_message(chat_id, text = "ВКЛЮЧЕН"  , parse_mode='HTML', reply_markup=keyboard())
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            chat_idG = chat_id
+            break
+
+        elif mqtt_callback == b'engine_is_off':
+            filework(1, 'heat on engine\n')
+            bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            break
+
+        elif (datetime.now()-t1).seconds > timeout:
+            bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
+            break
+
+def floor_operations(message, chat_id, user_id, chat_idG, timeout):
+    client.publish("/airport", payload="on_floor", qos=0, retain=False)
+    t1 = datetime.now()
+    while True:
+        if mqtt_callback == b'floor_is_on':
+            filework(2, 'heat off floor\n')
+            bot.send_message(chat_id, text = 'включен', parse_mode='HTML', reply_markup=keyboard())
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            break
+        elif mqtt_callback == b'floor_is_off':
+            filework(2, 'heat on floor\n')
+            bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
+            client.publish("/airport_callback", payload="0", qos=0, retain=False)
+            break
+        elif (datetime.now()-t1).seconds > timeout:
+            bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
+            break
+
+def security_operations(chat_id, payload, btn_status):
+    client.publish("/airport_callback", payload="0", qos=0, retain=False)
+    client.publish("/airport", payload=payload, qos=0, retain=False)
+    filework(0, btn_status)
+    bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
+
+
 
 @bot.message_handler(content_types=["text"], func=lambda message: message.chat.id in whitelist) #принимает любой текст фигню какую-то
 def send_anytext(message):     #обратная связь, после получения команды с кнопки
@@ -63,57 +109,16 @@ def send_anytext(message):     #обратная связь, после полу
     timeout = 5
 
     if message.text == 'heat on engine' or message.text == 'heat off engine':
-        client.publish("/airport", payload="on_engine", qos=0, retain=False)
-        t1 = datetime.now()
-        while True:
-            if mqtt_callback == b'engine_is_on':
-                filework(1, 'heat off engine\n')
-                now = datetime.now()
-                bot.send_message(chat_id, text = "Подогрев двигателя включен в "+str(now.hour)+" "+str(now.minute)  , parse_mode='HTML', reply_markup=keyboard())
-                client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                chat_idG = chat_id
-                break
-
-            elif mqtt_callback == b'engine_is_off':
-                filework(1, 'heat on engine\n')
-                bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
-                client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                break
-
-            elif (datetime.now()-t1).seconds > timeout:
-                bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
-                break
+        engine_operations(message, chat_id, user_id, chat_idG, timeout)
 
     if message.text == 'heat on floor' or message.text == 'heat off floor':
-        client.publish("/airport", payload="on_floor", qos=0, retain=False)
-        t1 = datetime.now()
-        while True:
-            if mqtt_callback == b'floor_is_on':
-                filework(2, 'heat off floor\n')
-                bot.send_message(chat_id, text = 'включен', parse_mode='HTML', reply_markup=keyboard())
-                client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                break
-            elif mqtt_callback == b'floor_is_off':
-                filework(2, 'heat on floor\n')
-                bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
-                client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                break
-            elif (datetime.now()-t1).seconds > timeout:
-                bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
-                break
+        floor_operations(message, chat_id, user_id, chat_idG, timeout)
 
     if message.text == 'activate security':
-        client.publish("/airport_callback", payload="0", qos=0, retain=False)
-        client.publish("/airport", payload="security_activated", qos=0, retain=False)
-        filework(0, 'deactivate\n')
-        bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
-
+        security_operations(chat_id, payload="security_activated", btn_status="'deactivate\n'")
+        
     if message.text == 'deactivate':
-        client.publish("/airport_callback", payload="0", qos=0, retain=False)
-        client.publish("/airport", payload="security_deactivated", qos=0, retain=False)
-        filework(0, 'activate security\n')
-        bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
-
+        security_operations(chat_id, payload="security_deactivated", btn_status="'activate security\n'")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
