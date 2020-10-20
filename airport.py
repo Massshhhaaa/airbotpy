@@ -13,6 +13,7 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 mqtt_callback_sensor = 10
+whitelist = [441494356, 630799281]
 
 @bot.message_handler(commands=['start', 'go'])
 def send_welcome(message):
@@ -52,6 +53,9 @@ def keyboard():
     markup.add(btn2, btn3) #задаем кнопки, чере запятую
     return markup
 
+
+
+@bot.message_handler(func=lambda message: message.chat.id in whitelist)
 @bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
 def send_anytext(message):     #обратная связь, после получения команды с кнопки
     chat_id = message.chat.id
@@ -65,13 +69,10 @@ def send_anytext(message):     #обратная связь, после полу
         if message.text == 'heat on engine' or message.text == 'heat off engine':
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
             t1 = datetime.now()
-            current_time = datetime.now().time()
-            current_date = date.today()
             while True:
                 if mqtt_callback == b'engine_is_on':
                     filework(1, 'heat off engine\n')
-                    reply = "Подогрев двигателя включен в "+str(current_time)
-                    bot.send_message(chat_id, text = reply, parse_mode='HTML', reply_markup=keyboard())
+                    bot.send_message(chat_id, text = "ВКЛЮЧЕН", parse_mode='HTML', reply_markup=keyboard())
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     chat_idG = chat_id
                     break
