@@ -50,7 +50,7 @@ def keyboard():
     markup.add(btn2, btn3) #задаем кнопки, чере запятую
     return markup
 
-def operation(type_operation, message, Central):
+def operation(type_operation, message):
     global chat_idG
     chat_idG = message.chat.id
     timeout = 5
