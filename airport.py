@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 from threading import Thread
 import time
 import os
-from operations import operation security_operations
+from operations import operation, security_operations
 
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
