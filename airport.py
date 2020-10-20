@@ -34,7 +34,7 @@ def operation(type_operation, message, chat_id, user_id, chat_idG, timeout):
         if mqtt_callback == b'engine_is_on':
             filework(1, 'heat off engine\n')
             cb_msg = "ВКЛЮЧЕН"
-            chat_idG = chat_id
+            chat_idG = message.chat_id
             break
 
         elif mqtt_callback == b'engine_is_off':
