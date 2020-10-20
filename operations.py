@@ -40,8 +40,8 @@ def operation(type_operation, message):
 
 
 def security_operations(chat_id, payload, btn_status):
-    
-    client.publish("/airport_callback", payload="0", qos=0, retain=False)
+
+    client.publish("/airport_callback", payload="я ничтожество", qos=0, retain=False)
     client.publish("/airport", payload=payload, qos=0, retain=False)
     filework(0, btn_status)
     bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
