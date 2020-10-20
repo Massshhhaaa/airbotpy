@@ -115,10 +115,10 @@ def send_anytext(message):     #обратная связь, после полу
         floor_operations(message, chat_id, user_id, chat_idG, timeout)
 
     if message.text == 'activate security':
-        security_operations(chat_id, payload="security_activated", btn_status="'deactivate\n'")
-        
+        security_operations(chat_id, payload="security_activated", btn_status="deactivate\n")
+
     if message.text == 'deactivate':
-        security_operations(chat_id, payload="security_deactivated", btn_status="'activate security\n'")
+        security_operations(chat_id, payload="security_deactivated", btn_status="activate security\n")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
