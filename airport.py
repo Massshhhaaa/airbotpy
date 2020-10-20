@@ -9,7 +9,7 @@ from threading import Thread
 import time
 import os
 # from operations import operation, security_operations
-
+Central  = USTimeZone(+3, "Central")
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 mqtt_callback_sensor = 10
@@ -51,7 +51,7 @@ def keyboard():
     markup.add(btn2, btn3) #задаем кнопки, чере запятую
     return markup
 
-def operation(type_operation, message):
+def operation(type_operation, message, Central):
     global chat_idG
     chat_idG = message.chat.id
     timeout = 5
@@ -61,7 +61,7 @@ def operation(type_operation, message):
     while True:
         if mqtt_callback == b'engine_is_on':
             d = datetime.now()
-            d = d.replace(tzinfo=timezone.utc).astimezone(tz=None)
+            d = d.replace(tzinfo=timezone.utc).astimezone(tz=Central)
             filework(1, 'heat off engine\n')
             cb_msg = "Подогрев двигателя включен "+str(d.strftime("%d %b %H:%M"))+ "\nЗапланированное выключение через 3 часа"
             chat_idG = message.chat.id
