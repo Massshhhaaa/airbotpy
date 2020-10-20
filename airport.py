@@ -70,7 +70,7 @@ def send_anytext(message):     #обратная связь, после полу
             while True:
                 if mqtt_callback == b'engine_is_on':
                     filework(1, 'heat off engine\n')
-                    message = "Подогрев двигателя включен в "+current_time+"по мск"+current_date
+                    message = "Подогрев двигателя включен в "+str(current_time)
                     bot.send_message(chat_id, text = message, parse_mode='HTML', reply_markup=keyboard())
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     chat_idG = chat_id
