@@ -61,7 +61,6 @@ def send_anytext(message):     #обратная связь, после полу
     global chat_idG
     chat_idG = message.chat.id
     timeout = 5
-    now = datetime.datetime.now()
 
     if message.text == 'heat on engine' or message.text == 'heat off engine':
         client.publish("/airport", payload="on_engine", qos=0, retain=False)
