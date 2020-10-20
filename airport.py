@@ -7,7 +7,6 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
-import datetime
 import os
 
 bot = telebot.TeleBot(os.environ['TOKEN'])
