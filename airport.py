@@ -23,7 +23,7 @@ def send_welcome(message):
         reply_markup=keyboard())
 
 
-def operation(type_operation, message, chat_id, user_id, chat_idG, timeout):
+def operation(type_operation, message):
     global chat_idG
     chat_idG = message.chat.id
     timeout = 5
