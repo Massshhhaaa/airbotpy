@@ -60,8 +60,10 @@ def operation(type_operation, message):
     client.publish("/airport", payload=type_operation, qos=0, retain=False)
     while True:
         if mqtt_callback == b'engine_is_on':
+            d = datetime.now()
+            d.strftime("%d %b %H:%M")
             filework(1, 'heat off engine\n')
-            cb_msg = "ВКЛЮЧЕН"
+            cb_msg = "Подогрев двигателя включен "+str(d)+ "\nЗапланированное выключение через 3 часа"
             chat_idG = message.chat.id
             break
 
