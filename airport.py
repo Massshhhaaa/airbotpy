@@ -62,7 +62,7 @@ def operation(type_operation, message):
         if mqtt_callback == b'engine_is_on':
             filework(1, 'heat off engine\n')
             cb_msg = "ВКЛЮЧЕН"
-            chat_idG = message.chat_id
+            chat_idG = message.chat.id
             break
 
         elif mqtt_callback == b'engine_is_off':
@@ -83,21 +83,16 @@ def operation(type_operation, message):
         elif (datetime.now()-t1).seconds > timeout:
             cb_msg = 'Нет соединения'
             break
-
-
-
-
-
     client.publish("/airport_callback", payload="0", qos=0, retain=False)
     bot.send_message(message.chat.id, text = cb_msg, parse_mode="HTML", reply_markup=keyboard())
 
 
-def security_operations(chat_id, payload, btn_status):
+def security_operations(message, payload, btn_status):
 
     client.publish("/airport_callback", payload="я ничтожество", qos=0, retain=False)
     client.publish("/airport", payload=payload, qos=0, retain=False)
     filework(0, btn_status)
-    bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
+    bot.send_message(message.chat.id, text='oк', parse_mode='HTML', reply_markup=keyboard())
 
 
 @bot.message_handler(content_types=["text"], func=lambda message: message.chat.id in whitelist) #принимает любой текст фигню какую-то
@@ -109,10 +104,10 @@ def send_anytext(message):                                                      
         operation("on_floor", message)
 
     if message.text == 'activate security':
-        security_operations(message.chat.id, payload="security_activated", btn_status="deactivate\n")
+        security_operations(message, payload="security_activated", btn_status="deactivate\n")
 
     if message.text == 'deactivate':
-        security_operations(message.chat.id, payload="security_deactivated", btn_status="activate security\n")
+        security_operations(message, payload="security_deactivated", btn_status="activate security\n")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
