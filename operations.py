@@ -31,11 +31,16 @@ def operation(type_operation, message):
             cb_msg = 'Нет соединения'
             break
 
+
+
+
+
     client.publish("/airport_callback", payload="0", qos=0, retain=False)
     bot.send_message(message.chat.id, text = cb_msg, parse_mode="HTML", reply_markup=keyboard())
 
 
 def security_operations(chat_id, payload, btn_status):
+    
     client.publish("/airport_callback", payload="0", qos=0, retain=False)
     client.publish("/airport", payload=payload, qos=0, retain=False)
     filework(0, btn_status)
