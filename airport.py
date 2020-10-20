@@ -7,6 +7,7 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
+from datetime import datetime
 import os
 
 bot = telebot.TeleBot(os.environ['TOKEN'])
@@ -64,18 +65,23 @@ def send_anytext(message):     #обратная связь, после полу
         if message.text == 'heat on engine' or message.text == 'heat off engine':
             client.publish("/airport", payload="on_engine", qos=0, retain=False)
             t1 = datetime.now()
+            current_time = datetime.now().time()
+            current_date = date.today()
             while True:
                 if mqtt_callback == b'engine_is_on':
                     filework(1, 'heat off engine\n')
+                    message = "Подогрев двигателя включен в "+current_time+"по мск"current_date
                     bot.send_message(chat_id, text = 'ВКЛЮЧЕН', parse_mode='HTML', reply_markup=keyboard())
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     chat_idG = chat_id
                     break
+
                 elif mqtt_callback == b'engine_is_off':
                     filework(1, 'heat on engine\n')
                     bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
                     client.publish("/airport_callback", payload="0", qos=0, retain=False)
                     break
+
                 elif (datetime.now()-t1).seconds > timeout:
                     bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
                     break
@@ -128,7 +134,6 @@ def on_message(client, userdata, msg,):
 
 
 def check_upd(client):
-
     time_sensitive = 0 # время задержки между отправкой оповещений движении
 
 

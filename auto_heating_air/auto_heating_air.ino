@@ -130,7 +130,7 @@ void loop() {
 void SensorData{
   if (sensor_flag == true ) && (digitalRead(SENSOR_PIN1) == LOW){
     client.publish("/airport_sensor", String("motion_detected"));
-  }
+  } delay(delay);
 }
 
 void AutoDisableTimeLimit{   //отключение при достижении лимита времени подогрева двигателя
