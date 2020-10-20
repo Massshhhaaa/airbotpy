@@ -3,13 +3,12 @@
 #
 import telebot
 from telebot import types
-from datetime import datetime,  timezone
+from datetime import datetime, timedelta
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
 import os
 # from operations import operation, security_operations
-Central  = USTimeZone(+3, "Central")
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 mqtt_callback_sensor = 10
@@ -60,8 +59,7 @@ def operation(type_operation, message, Central):
     client.publish("/airport", payload=type_operation, qos=0, retain=False)
     while True:
         if mqtt_callback == b'engine_is_on':
-            d = datetime.now()
-            d = d.replace(tzinfo=timezone.utc).astimezone(tz=Central)
+            d = datetime.now() + timedelta(hours=3)
             filework(1, 'heat off engine\n')
             cb_msg = "Подогрев двигателя включен "+str(d.strftime("%d %b %H:%M"))+ "\nЗапланированное выключение через 3 часа"
             chat_idG = message.chat.id
