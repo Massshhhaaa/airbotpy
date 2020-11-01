@@ -1,3 +1,4 @@
+#include <MsTimer2.h>
 #include <MQTT.h>
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
@@ -27,11 +28,12 @@ const char *mqtt_server = "farmer.cloudmqtt.com"; // Имя сервера MQTT
 const int mqtt_port = 12415; // Порт для подключения к серверу MQTT
 const char *mqtt_user = "vcnpayei"; // Логин от сервер
 const char *mqtt_pass = "Mc55q9zvQ7Ek"; // Пароль от сервера
-const int delay = 5;
+const int delayfor = 15;
 
 uint32_t timestart;
 uint32_t timeconst = 10800000; // врямя автоматического отключения 3 часа в мс
 
+int number = 0;
 
 WiFiClient wclient;
 PubSubClient client(wclient, mqtt_server, mqtt_port);
@@ -67,12 +69,12 @@ void callback(const MQTT::Publish & pub) {     // Функция получен�
     }
 
     if (payload == "security_activated") {
-      sensor_flag = true;
+      security_condition = true;
       client.publish("/airport_callback", String("now_security_activate"));
     }
 
     if (payload == "security_deactivated") {
-      sensor_flag = false;
+      security_condition = false;
       client.publish("/airport_callback", String("now_security_deactive"));
     }
 
@@ -83,7 +85,11 @@ void setup() {
   Serial.begin(115200);
   pinMode(RELAY_PIN1, OUTPUT);
   pinMode(RELAY_PIN2, OUTPUT);
-  pinMode(SENSOR_PIN1, INPUT);
+
+  attachInterrupt(SENSOR_PIN1, stateChange, FALLING); // Set the interrupt function, interrupt pin is digital pin D2, interrupt service function is stateChange (), when the D2 power change from high to low , the trigger interrupt.
+  MsTimer2::set(500, Handle); // Set the timer interrupt function, running once Handle() function per 1000ms
+  MsTimer2::start();//Start timer interrupt function
+
 
 }
 
@@ -119,33 +125,40 @@ void loop() {
     if (client.connected()) {
 
       client.loop();
-
-      SensorData();
       AutoDisableTimeLimit();
 
-  }}
+    }
+  }
 
 }
 
-void SensorData{
-  if (sensor_flag == true ) && (digitalRead(SENSOR_PIN1) == LOW){
+
+void stateChange() {
+  number++;  //Interrupted once, the number + 1
+}
+
+void Handle() { //Timer service function
+  if ((number > 1) && (security_condition == true )) { //If in the set of the interrupt time the number more than 1 times, then means have detect moving objects,This value can be adjusted according to the actual situation, which is equivalent to adjust the threshold of detection speed of moving objects.
     client.publish("/airport_sensor", String("motion_detected"));
-  } delay(delay);
+    number = 0; //Cleare the number, so that it does not affect the next trigger
+  }
+  else
+    number = 0;
 }
 
-void AutoDisableTimeLimit{   //отключение при достижении лимита времени подогрева двигателя
-  if (digitalRead(RELAY_PIN1) == LOW) && (millis() - timestart >= timeconst) && (automate_disable_flag == true) {
+void AutoDisableTimeLimit () {  //отключение при достижении лимита времени подогрева двигателя
+  if ((digitalRead(RELAY_PIN1) == LOW) && (millis() - timestart >= timeconst) && (automate_disable_flag == true)) {
     digitalWrite(RELAY_PIN1, HIGH);
     client.publish("/airport_callback", String("engine_is_off_auto"));
     automate_disable_flag = false;
-    } delay(delay);
+  } delay(delayfor);
 }
 
 
-void AutoDisableRestasrt{ //автоматическое флажковое отключение при рестарте
+void AutoDisableRestasrt () { //автоматическое флажковое отключение при рестарте
   if (off_rstflag == true) {
     digitalWrite(RELAY_PIN1, HIGH);
     digitalWrite(RELAY_PIN2, HIGH);
     off_rstflag = false;
-  } delay(delay);
+  } delay(delayfor);
 }

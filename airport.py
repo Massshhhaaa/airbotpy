@@ -12,7 +12,7 @@ import os
 bot = telebot.TeleBot(os.environ['TOKEN'])
 mqtt_callback = 10
 mqtt_callback_sensor = 10
-whitelist = [441494356, 630799281]
+whitelist = [os.enviton['WHITE_LIST']]
 
 @bot.message_handler(commands=['start', 'go'], func=lambda message: message.chat.id in whitelist)
 def send_welcome(message):
@@ -137,11 +137,8 @@ def check_upd(client):
             filework(1, 'heat on engine\n')
             print("вошел в функцию автоматического отключения двигателя")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            global chat_idG
-            bot.send_message(chat_idG, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
-            #дублирование для меня
-            if chat_idG != 441494356:
-                bot.send_message(441494356, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
+            for id in whitelist:
+            bot.send_message(id, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
 
 
         f = open('text.txt', 'r')
