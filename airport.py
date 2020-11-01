@@ -10,7 +10,7 @@ import time
 import os
 # from operations import operation, security_operations
 bot = telebot.TeleBot(os.environ['TOKEN'])
-whitelist = [os.enviton['WHITE_LIST']]
+whitelist = [(os.enviton['WHITE_LIST'])]
 mqtt_callback = 10
 mqtt_callback_sensor = 10
 
