@@ -23,7 +23,8 @@ mqtt_callback_sensor = 10
 def send_welcome(message):
     bot.send_message(
         message.chat.id,
-        '''Добро пожаловать, Милорд.
+        '''Мне нужно отправить команду, чтобы я могу выполнить действие.
+         Чтобы обновить значения клавиатуры можно отправить любой символ.
         ''',
         reply_markup=keyboard())
 
@@ -115,7 +116,7 @@ def send_anytext(message):                                                      
         security_operations(message, payload="security_deactivated", btn_status="activate security\n")
 
     else:
-        cb_msg = 'Что? Мне нужно отправить команду!'
+        cb_msg = 'Вот обновленная клавиатура..'
         bot.send_message(message.chat.id, text = cb_msg, parse_mode="HTML", reply_markup=keyboard())
 
 def on_connect(client, userdata, flags, rc):
