@@ -11,12 +11,9 @@ import os
 # from operations import operation, security_operations
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
-#whitlist configuration
-wh_str = os.environ['WHITE_LIST']
-a_list = wh_str.split()
-map_object = map(int, a_list)
-whitelist = list(map_object)
-print(whitelist)
+#whitelist configuration
+whitelist = list(map(int, os.environ['WHITE_LIST'].split()))
+
 
 mqtt_callback = 10
 mqtt_callback_sensor = 10
@@ -116,6 +113,10 @@ def send_anytext(message):                                                      
 
     if message.text == 'deactivate':
         security_operations(message, payload="security_deactivated", btn_status="activate security\n")
+
+    else:
+        cb_msg = 'Что? Мне нужно отправить команду!'
+        bot.send_message(message.chat.id, text = cb_msg, parse_mode="HTML", reply_markup=keyboard())
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
