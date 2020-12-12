@@ -3,25 +3,29 @@
 #
 import telebot
 from telebot import types
-from datetime import datetime
+from datetime import datetime, timedelta
 import paho.mqtt.client as mqtt
 from threading import Thread
 import time
 import os
-
+# from operations import operation, security_operations
 bot = telebot.TeleBot(os.environ['TOKEN'])
+
+#whitelist configuration
+whitelist = list(map(int, os.environ['WHITE_LIST'].split()))
+
+
 mqtt_callback = 10
 mqtt_callback_sensor = 10
 
-@bot.message_handler(commands=['start', 'go'])
+
+@bot.message_handler(commands=['start', 'go'], func=lambda message: message.chat.id in whitelist)
 def send_welcome(message):
-    user_id = message.from_user.id
-    if user_id == 441494356 or user_id == 630799281:
-        bot.send_message(
-            message.chat.id,
-            '''Добро пожаловать, Милорд.
-            ''',
-            reply_markup=keyboard())
+    bot.send_message(
+        message.chat.id,
+        ''' Мне нужно отправить команду, чтобы я могу выполнить действие.
+        ''',
+        reply_markup=keyboard())
 
 
 def filework(place, text): # place = 0-2 in list, text must be include "something\n"
@@ -51,62 +55,64 @@ def keyboard():
     markup.add(btn2, btn3) #задаем кнопки, чере запятую
     return markup
 
-@bot.message_handler(content_types=["text"]) #принимает любой текст фигню какую-то
-def send_anytext(message):     #обратная связь, после получения команды с кнопки
-    chat_id = message.chat.id
-    user_id = message.from_user.id
+def operation(type_operation, message):
     global chat_idG
     chat_idG = message.chat.id
-    timeout = 3
+    timeout = 5
+    t1 = datetime.now()
 
-    if user_id == 441494356 or user_id == 630799281:
+    client.publish("/airport", payload=type_operation, qos=0, retain=False)
+    while True:
+        if mqtt_callback == b'engine_is_on':
+            d = datetime.now() + timedelta(hours=3)
+            filework(1, 'heat off engine\n')
+            cb_msg = "Подогрев двигателя включен "+str(d.strftime("%d %b %H:%M"))+ "\nЗапланированное выключение через 3 часа"
+            chat_idG = message.chat.id
+            break
 
-        if message.text == 'heat on engine' or message.text == 'heat off engine':
-            client.publish("/airport", payload="on_engine", qos=0, retain=False)
-            t1 = datetime.now()
-            while True:
-                if mqtt_callback == b'engine_is_on':
-                    filework(1, 'heat off engine\n')
-                    bot.send_message(chat_id, text = 'ВКЛЮЧЕН', parse_mode='HTML', reply_markup=keyboard())
-                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                    chat_idG = chat_id
-                    break
-                elif mqtt_callback == b'engine_is_off':
-                    filework(1, 'heat on engine\n')
-                    bot.send_message(chat_id, text = 'выключен', parse_mode='HTML', reply_markup=keyboard())
-                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                    break
-                elif (datetime.now()-t1).seconds > timeout:
-                    bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
-                    break
+        elif mqtt_callback == b'engine_is_off':
+            filework(1, 'heat on engine\n')
+            cb_msg = 'выключен'
+            break
 
-        if message.text == 'heat on floor' or message.text == 'heat off floor':
-            client.publish("/airport", payload="on_floor", qos=0, retain=False)
-            t1 = datetime.now()
-            while True:
-                if mqtt_callback == b'floor_is_on':
-                    filework(2, 'heat off floor\n')
-                    bot.send_message(chat_id, text = 'включен', parse_mode='HTML', reply_markup=keyboard())
-                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                    break
-                elif mqtt_callback == b'floor_is_off':
-                    filework(2, 'heat on floor\n')
-                    bot.send_message(chat_id, text = 'выключен', parse_mode="HTML", reply_markup=keyboard())
-                    client.publish("/airport_callback", payload="0", qos=0, retain=False)
-                    break
-                elif (datetime.now()-t1).seconds > timeout:
-                    bot.send_message(chat_id, text = 'Нет соединения', parse_mode='HTML', reply_markup=keyboard())
-                    break
+        elif mqtt_callback == b'floor_is_on':
+            filework(2, 'heat off floor\n')
+            cb_msg = 'включен'
+            break
 
-        if message.text == 'activate security':
-            client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            filework(0, 'deactivate\n')
-            bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
+        elif mqtt_callback == b'floor_is_off':
+            filework(2, 'heat on floor\n')
+            cb_msg = 'выключен'
+            break
 
-        if message.text == 'deactivate':
-            client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            filework(0, 'activate security\n')
-            bot.send_message(chat_id, text='oк', parse_mode='HTML', reply_markup=keyboard())
+        elif (datetime.now()-t1).seconds > timeout:
+            cb_msg = 'Нет соединения'
+            break
+    client.publish("/airport_callback", payload="0", qos=0, retain=False)
+    bot.send_message(message.chat.id, text = cb_msg, parse_mode="HTML", reply_markup=keyboard())
+
+
+def security_operations(message, payload, btn_status):
+
+    client.publish("/airport_callback", payload="я ничтожество", qos=0, retain=False)
+    client.publish("/airport", payload=payload, qos=0, retain=False)
+    filework(0, btn_status)
+    bot.send_message(message.chat.id, text='oк', parse_mode='HTML', reply_markup=keyboard())
+
+
+@bot.message_handler(content_types=["text"], func=lambda message: message.chat.id in whitelist) #принимает любой текст фигню какую-то
+def send_anytext(message):                                                                       #обратная связь, после получения команды с кнопки
+    if message.text == 'heat on engine' or message.text == 'heat off engine':
+        operation("on_engine", message)
+
+    if message.text == 'heat on floor' or message.text == 'heat off floor':
+        operation("on_floor", message)
+
+    if message.text == 'activate security':
+        security_operations(message, payload="security_activated", btn_status="deactivate\n")
+
+    if message.text == 'deactivate':
+        security_operations(message, payload="security_deactivated", btn_status="activate security\n")
 
 
 def on_connect(client, userdata, flags, rc):
@@ -126,10 +132,9 @@ def on_message(client, userdata, msg,):
 
 
 def check_upd(client):
-    
-    time_sensitive = 1 # время задержки между отправкой оповещений движении
-    
-    
+    time_sensitive = 0 # время задержки между отправкой оповещений движении
+
+
     start_flg = True
     t3 = datetime.now()
 
@@ -138,11 +143,8 @@ def check_upd(client):
             filework(1, 'heat on engine\n')
             print("вошел в функцию автоматического отключения двигателя")
             client.publish("/airport_callback", payload="0", qos=0, retain=False)
-            global chat_idG
-            bot.send_message(chat_idG, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
-            #дублирование для меня
-            if chat_idG != 441494356:
-                bot.send_message(441494356, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
+            for id in whitelist:
+                bot.send_message(id, text = 'Автоматически выключен подогрев двигателя', parse_mode='HTML', reply_markup=keyboard())
 
 
         f = open('text.txt', 'r')
@@ -153,7 +155,7 @@ def check_upd(client):
             if (datetime.now() - t3).seconds > time_sensitive or start_flg:
                 if mqtt_callback_sensor == b'motion_detected':
                     client.publish("/airport_sensor", payload="0", qos=0, retain=False)
-                    bot.send_message(chat_id = 441494356, text = 'Обнаружен котiк', parse_mode='HTML')
+                    bot.send_message(chat_id = 441494356, text = 'Обнаружено движение', parse_mode='HTML')
                     t3 = datetime.now() # время последнего обнаружения
                     start_flg = False
 
