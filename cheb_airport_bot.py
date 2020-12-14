@@ -11,7 +11,13 @@ from threading import Thread
 import time
 import os
 
-bot = telebot.TeleBot("1020204517:AAFY19v_N6cSXN4MwpIqG54Gaedd5eY4DyI", parse_mode=None)
+# from operations import operation, security_operations
+bot = telebot.TeleBot(os.environ['TOKEN'])
+
+#whitelist configuration
+whitelist = list(map(int, os.environ['WHITE_LIST'].split()))
+
+
 
 off = u'\U000025EF'
 on = u'\U00002B24'
@@ -78,20 +84,14 @@ def main_markup_info():
     return text
 
 
-
-
-
-
-
-
-@bot.message_handler(commands=['start', 'help'])
-@bot.message_handler(content_types=["text"])
+@bot.message_handler(commands=['start', 'help'],  func=lambda message: message.chat.id in whitelist)
+@bot.message_handler(content_types=["text"],  func=lambda message: message.chat.id in whitelist)
 def send_welcome(message):
     bot.send_message(message.chat.id, text=main_markup_info(), reply_markup=(main_markup()))
 
 
 
-@bot.callback_query_handler(func=lambda call: True)
+@bot.callback_query_handler(func=lambda call: True, func=lambda message: call.message.chat.id in whitelist)
 def callback_query(call):
 
     # MAIN CALLBACKS
