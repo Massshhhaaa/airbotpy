@@ -168,8 +168,10 @@ def on_message(client, userdata, msg,):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
-client.connect("farmer.cloudmqtt.com", 12415, 60)
+# client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
+# client.connect("farmer.cloudmqtt.com", 12415, 60)
+client.username_pw_set("user_c96ad232", "pass_4cb546e4")
+client.connect("srv2.clusterfly.ru", 9991, 60)
 Thread(target=client.loop_forever, args=()).start()
 
 
