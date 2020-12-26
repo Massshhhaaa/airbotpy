@@ -122,7 +122,7 @@ def callback_query(call):
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id,
                               reply_markup=main_markup())
 
-heatEngine = Command("HeatEngine", "loseev5@gmail.com/engine_heating") 
+heatEngine = Command("HeatEngine", "/engine_heating") 
 heatFloor = Command('HeatFloor', '/floor_heating')
 motionSensor = Command('Signaling', '/motion_sensor')
 
@@ -168,10 +168,8 @@ def on_message(client, userdata, msg,):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-# client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
-# client.connect("farmer.cloudmqtt.com", 12415, 60)
-client.username_pw_set("loseev5@gmail.com", "D@zxTFkNT6XAHmv")
-client.connect("maqiatto.com", 1883, 60)
+client.username_pw_set("vcnpayei", os.environ['MQTT_PASS'])
+client.connect("farmer.cloudmqtt.com", 12415, 60)
 Thread(target=client.loop_forever, args=()).start()
 
 
