@@ -122,7 +122,7 @@ def callback_query(call):
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id,
                               reply_markup=main_markup())
 
-heatEngine = Command("HeatEngine", "/engine_heating") 
+heatEngine = Command("HeatEngine", "loseev5@gmail.com/engine_heating") 
 heatFloor = Command('HeatFloor', '/floor_heating')
 motionSensor = Command('Signaling', '/motion_sensor')
 
