@@ -11,7 +11,6 @@ from threading import Thread
 import time
 import os
 
-# from operations import operation, security_operations
 bot = telebot.TeleBot(os.environ['TOKEN'])
 
 #whitelist configuration
@@ -122,9 +121,9 @@ def callback_query(call):
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id,
                               reply_markup=main_markup())
 
-heatEngine = Command("HeatEngine", "/engine_heating") 
-heatFloor = Command('HeatFloor', '/floor_heating')
-motionSensor = Command('Signaling', '/motion_sensor')
+heatEngine = Command("HeatEngine", "test/engine_heating") 
+heatFloor = Command('HeatFloor', 'test/floor_heating')
+motionSensor = Command('Signaling', 'test/motion_sensor')
 
 
 
@@ -147,7 +146,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe( heatEngine.backTopic)
     client.subscribe( heatFloor.backTopic)
     client.subscribe( motionSensor.backTopic)
-    client.subscribe('/motion_sensor/data')
+    client.subscribe('test/motion_sensor/data')
 
 def on_message(client, userdata, msg,):
     print(msg.topic+" "+str(msg.payload))
@@ -161,7 +160,7 @@ def on_message(client, userdata, msg,):
     elif msg.topic == motionSensor.backTopic:
         motionSensor.react()
 
-    elif msg.topic == '/motion_sensor/data':
+    elif msg.topic == 'test/motion_sensor/data':
         motionNotification()
 
 
