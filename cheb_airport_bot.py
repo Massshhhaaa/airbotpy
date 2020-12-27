@@ -121,9 +121,9 @@ def callback_query(call):
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id,
                               reply_markup=main_markup())
 
-heatEngine = Command("HeatEngine", "test/engine_heating") 
-heatFloor = Command('HeatFloor', 'test/floor_heating')
-motionSensor = Command('Signaling', 'test/motion_sensor')
+heatEngine = Command("HeatEngine", "/engine_heating") 
+heatFloor = Command('HeatFloor', '/floor_heating')
+motionSensor = Command('Signaling', '/motion_sensor')
 
 
 
@@ -146,7 +146,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe( heatEngine.backTopic)
     client.subscribe( heatFloor.backTopic)
     client.subscribe( motionSensor.backTopic)
-    client.subscribe('test/motion_sensor/data')
+    client.subscribe('/motion_sensor/data')
 
 def on_message(client, userdata, msg,):
     print(msg.topic+" "+str(msg.payload))
@@ -160,7 +160,7 @@ def on_message(client, userdata, msg,):
     elif msg.topic == motionSensor.backTopic:
         motionSensor.react()
 
-    elif msg.topic == 'test/motion_sensor/data':
+    elif msg.topic == '/motion_sensor/data':
         motionNotification()
 
 
